@@ -5,15 +5,24 @@ export default class AutoSavingInput extends React.Component {
     super(props)
     this.state = {currentValue: props.lastSavedValue || ''}
   }
-  handleBlur = () => {
-    this.props.onSubmit(this.state.currentValue)
-  }
   render() {
     return (
       <input
+        ref={(input) => this.input = input}
         value={this.state.currentValue}
         onChange={(e) => this.setState({currentValue: e.target.value})}
-        onBlur={this.handleBlur}
+        onBlur={() => this.props.onSubmit(this.state.currentValue)}
+        onKeyUp={(event) => {
+          switch (event.key) {
+            case 'Enter':
+              this.input.blur()
+              break
+            case 'Escape': {
+              this.setState({currentValue: this.props.lastSavedValue}, () => this.input.blur())
+              break
+            }
+          }
+        }}
       />
     )
   }
